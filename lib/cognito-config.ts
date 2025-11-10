@@ -1,10 +1,10 @@
 export const getCognitoConfig = () => {
   const clientId = "2r72lfm59rs6257glg6gt7sfa9"
   const region = "us-east-1"
-  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID
+  const userPoolId = "us-east-1_4ZTGQMA7B"
   const domain = "us-east-14ztgqma7b"
   const redirectUri = "https://d84l1y8p4kdic.cloudfront.net"
-  const signOutUri = process.env.NEXT_PUBLIC_COGNITO_SIGN_OUT_URI
+  const signOutUri = "https://v0-nutrition-tracking-app-git-demo-seges-projects-2d2c87ab.vercel.app/"
 
   if (!clientId || !region || !domain || !redirectUri) {
     throw new Error("Missing required Cognito environment variables")
