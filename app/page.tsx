@@ -24,7 +24,7 @@ export default function InsurancePage() {
 
   // ✅ Показываем страницу Cognito логина, если юзер не авторизован
   if (!authenticated) {
-    return <InsuranceIdEntry />
+    return <CognitoLoginScreen />
   }
 
   const handleInsuranceIdSubmit = (id: string) => {
