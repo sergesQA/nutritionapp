@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const claims = parseJwtClaims(tokens.idToken)
 
     // Create response and set auth cookies
-    const response = NextResponse.redirect("/insurance")
+    const response = NextResponse.redirect(new URL("/insurance", request.url))
 
 
     response.cookies.set("access_token", tokens.accessToken, {
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     }
 
     response.cookies.set("user_info", JSON.stringify(claims), {
-      httpOnly: false, // Allow client-side access for display
+      httpOnly: true, // Allow client-side access for display
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       maxAge: 3600,
