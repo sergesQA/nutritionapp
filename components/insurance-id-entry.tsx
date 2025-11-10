@@ -30,13 +30,10 @@ export function InsuranceIdEntry({ onSubmit }: InsuranceIdEntryProps) {
     onSubmit(id)
   }
 
-  const handleLogout = () => {
-    // если у вас есть /logout API — лучше сделать редирект туда
-    document.cookie = "access_token=; Max-Age=0; path=/;"
-    document.cookie = "id_token=; Max-Age=0; path=/;"
-    document.cookie = "refresh_token=; Max-Age=0; path=/;"
-    window.location.href = "/"
+    const handleLogout = () => {
+       window.location.href = "/api/auth/logout"
   }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 to-secondary/5">
