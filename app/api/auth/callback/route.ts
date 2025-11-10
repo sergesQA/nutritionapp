@@ -1,44 +1,81 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getCognitoConfig } from "@/lib/cognito-config"
+import { type NextRequest, NextResponse } from "next/server"
+import { exchangeCodeForToken, parseJwtClaims } from "@/lib/auth"
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const code = searchParams.get("code")
-  const state = searchParams.get("state")
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams
+    const code = searchParams.get("code")
+    const state = searchParams.get("state")
+    const error = searchParams.get("error")
 
-  if (!code) {
-    return NextResponse.redirect("/")
+    // Check for Cognito errors
+    if (error) {
+      console.error("[v0] Cognito error:", error)
+      return NextResponse.redirect(new URL(`/?error=${error}`, request.url))
+    }
+
+    if (!code) {
+      return NextResponse.redirect(new URL("/?error=no_code", request.url))
+    }
+
+    // Verify state matches
+    const storedState = request.cookies.get("oauth_state")?.value
+    if (!storedState || storedState !== state) {
+      console.error("[v0] State mismatch")
+      return NextResponse.redirect(new URL("/?error=state_mismatch", request.url))
+    }
+
+    const codeVerifier = request.cookies.get("code_verifier")?.value
+    if (!codeVerifier) {
+      console.error("[v0] Code verifier not found")
+      return NextResponse.redirect(new URL("/?error=no_verifier", request.url))
+    }
+
+    // Exchange code for tokens using PKCE
+    const tokens = await exchangeCodeForToken(code, codeVerifier)
+
+    // Parse ID token to get user claims
+    const claims = parseJwtClaims(tokens.idToken)
+
+    // Create response and set auth cookies
+    const response = NextResponse.redirect(new URL("/insurance"))
+
+    response.cookies.set("access_token", tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 3600, // 1 hour
+    })
+
+    response.cookies.set("id_token", tokens.idToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 3600,
+    })
+
+    if (tokens.refreshToken) {
+      response.cookies.set("refresh_token", tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 2592000, // 30 days
+      })
+    }
+
+    response.cookies.set("user_info", JSON.stringify(claims), {
+      httpOnly: false, // Allow client-side access for display
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 3600,
+    })
+
+    response.cookies.delete("code_verifier")
+    response.cookies.delete("oauth_state")
+
+    return response
+  } catch (error) {
+    console.error("[v0] Callback error:", error)
+    return NextResponse.redirect(new URL("/?error=callback_failed", request.url))
   }
-
-  const config = getCognitoConfig()
-
-  const tokenRes = await fetch(config.tokenEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      client_id: config.clientId,
-      redirect_uri: config.redirectUri,
-      code,
-    }),
-  })
-
-  if (!tokenRes.ok) {
-    console.error("Token exchange failed", await tokenRes.text())
-    return NextResponse.redirect("/")
-  }
-
-  const tokens = await tokenRes.json()
-
-  const response = NextResponse.redirect("/insurance") // ← ✅ Вот сюда переходим после логина
-
-  response.cookies.set("access_token", tokens.access_token, { httpOnly: true, path: "/" })
-  response.cookies.set("id_token", tokens.id_token, { httpOnly: true, path: "/" })
-  if (tokens.refresh_token) {
-    response.cookies.set("refresh_token", tokens.refresh_token, { httpOnly: true, path: "/" })
-  }
-
-  return response
 }
