@@ -1,10 +1,10 @@
 export const getCognitoConfig = () => {
-  const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID
+  const clientId = "2r72lfm59rs6257glg6gt7sfa9"
   const clientSecret = process.env.COGNITO_CLIENT_SECRET
-  const region = process.env.NEXT_PUBLIC_COGNITO_REGION
+  const region = "us-east-1"
   const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID
-  const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN
-  const redirectUri = process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI
+  const domain = "us-east-14ztgqma7b"
+  const redirectUri = "https://d84l1y8p4kdic.cloudfront.net"
   const signOutUri = process.env.NEXT_PUBLIC_COGNITO_SIGN_OUT_URI
 
   if (!clientId || !region || !domain || !redirectUri) {
@@ -24,6 +24,7 @@ export const getCognitoConfig = () => {
     tokenEndpoint: `https://${domain}.auth.${region}.amazoncognito.com/oauth2/token`,
     userInfoEndpoint: `https://${domain}.auth.${region}.amazoncognito.com/oauth2/userInfo`,
     logoutEndpoint: `https://${domain}.auth.${region}.amazoncognito.com/logout`,
+    loginEndpoint: `https://${domain}.auth.${region}.amazoncognito.com/login`,
   }
 }
 

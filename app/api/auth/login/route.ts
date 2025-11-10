@@ -8,16 +8,17 @@ export async function GET(request: NextRequest) {
     // Generate secure random state
     const state = generateRandomString()
 
-    // Build authorization URL
     const params = new URLSearchParams({
       client_id: config.clientId,
       response_type: "code",
-      scope: "openid email phone",
+      scope: "email openid phone",
       redirect_uri: config.redirectUri,
       state,
     })
 
     const authUrl = `${config.authorizationEndpoint}?${params.toString()}`
+
+    console.log("[v0] Auth URL:", authUrl)
 
     // Store state in cookie for CSRF protection
     const response = NextResponse.redirect(authUrl)
