@@ -25,7 +25,7 @@ export default function InsurancePage() {
   }
 
   if (!authenticated) {
-    return <InsuranceIdEntry />
+    return <CognitoLoginScreen />
   }
 
   const handleInsuranceIdSubmit = (id: string) => {
