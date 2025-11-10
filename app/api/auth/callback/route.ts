@@ -44,14 +44,14 @@ export async function GET(request: NextRequest) {
     response.cookies.set("access_token", tokens.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 3600, // 1 hour
     })
 
     response.cookies.set("id_token", tokens.idToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 3600,
     })
 
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       response.cookies.set("refresh_token", tokens.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "none",
         maxAge: 2592000, // 30 days
       })
     }
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set("user_info", JSON.stringify(claims), {
       httpOnly: false, // Allow client-side access for display
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 3600,
     })
 
