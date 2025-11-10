@@ -26,9 +26,16 @@ export function InsuranceIdEntry({ onSubmit }: InsuranceIdEntryProps) {
     }
 
     setIsLoading(true)
-    // Simulate validation
     await new Promise((resolve) => setTimeout(resolve, 500))
     onSubmit(id)
+  }
+
+  const handleLogout = () => {
+    // если у вас есть /logout API — лучше сделать редирект туда
+    document.cookie = "access_token=; Max-Age=0; path=/;"
+    document.cookie = "id_token=; Max-Age=0; path=/;"
+    document.cookie = "refresh_token=; Max-Age=0; path=/;"
+    window.location.href = "/"
   }
 
   return (
@@ -64,6 +71,15 @@ export function InsuranceIdEntry({ onSubmit }: InsuranceIdEntryProps) {
               {isLoading ? "Verifying..." : "Continue"}
             </Button>
           </form>
+
+          {/* 🔥 Новая кнопка Logout */}
+          <Button
+            variant="destructive"
+            onClick={handleLogout}
+            className="w-full h-10"
+          >
+            Log out
+          </Button>
 
           <p className="text-xs text-center text-muted-foreground">Your data is secure and encrypted</p>
         </div>
