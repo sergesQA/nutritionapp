@@ -9,7 +9,7 @@ import { MainApp } from "@/components/main-app"
 
 type AppState = "entry" | "onboarding" | "app"
 
-export default function Home() {
+export default function InsurancePage() {
   const { authenticated, loading } = useAuth()
   const [appState, setAppState] = useState<AppState>("entry")
   const [userProfile, setUserProfile] = useState<any>(null)
@@ -22,6 +22,7 @@ export default function Home() {
     )
   }
 
+  // ✅ Показываем страницу Cognito логина, если юзер не авторизован
   if (!authenticated) {
     return <CognitoLoginScreen />
   }
