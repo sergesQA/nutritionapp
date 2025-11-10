@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const claims = parseJwtClaims(tokens.idToken)
 
     // Create response and set auth cookies
-    const response = NextResponse.redirect("/insurance", request.url)
+    const response = NextResponse.redirect("/insurance")
 
 
     response.cookies.set("access_token", tokens.accessToken, {
