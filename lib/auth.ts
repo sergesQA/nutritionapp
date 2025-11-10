@@ -1,7 +1,4 @@
-import { jwtVerify } from "jose"
 import { getCognitoConfig } from "./cognito-config"
-
-const secret = new TextEncoder().encode(process.env.COGNITO_CLIENT_SECRET || "your-secret-key")
 
 export interface AuthClaims {
   sub: string
@@ -11,16 +8,10 @@ export interface AuthClaims {
   [key: string]: any
 }
 
-export async function verifyAndDecodeToken(token: string): Promise<AuthClaims> {
-  try {
-    const verified = await jwtVerify(token, secret)
-    return verified.payload as AuthClaims
-  } catch (error) {
-    throw new Error(`Token verification failed: ${error}`)
-  }
-}
-
-export async function exchangeCodeForToken(code: string): Promise<{
+export async function exchangeCodeForToken(
+  code: string,
+  codeVerifier: string,
+): Promise<{
   accessToken: string
   idToken: string
   refreshToken?: string
@@ -30,9 +21,9 @@ export async function exchangeCodeForToken(code: string): Promise<{
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     client_id: config.clientId,
-    client_secret: config.clientSecret || "",
     code,
     redirect_uri: config.redirectUri,
+    code_verifier: codeVerifier,
   })
 
   const response = await fetch(config.tokenEndpoint, {

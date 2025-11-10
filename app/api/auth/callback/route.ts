@@ -25,8 +25,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL("/?error=state_mismatch", request.url))
     }
 
-    // Exchange code for tokens
-    const tokens = await exchangeCodeForToken(code)
+    const codeVerifier = request.cookies.get("code_verifier")?.value
+    if (!codeVerifier) {
+      console.error("[v0] Code verifier not found")
+      return NextResponse.redirect(new URL("/?error=no_verifier", request.url))
+    }
+
+    // Exchange code for tokens using PKCE
+    const tokens = await exchangeCodeForToken(code, codeVerifier)
 
     // Parse ID token to get user claims
     const claims = parseJwtClaims(tokens.idToken)
@@ -63,6 +69,9 @@ export async function GET(request: NextRequest) {
       sameSite: "lax",
       maxAge: 3600,
     })
+
+    response.cookies.delete("code_verifier")
+    response.cookies.delete("oauth_state")
 
     return response
   } catch (error) {
