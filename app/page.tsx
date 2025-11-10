@@ -23,7 +23,7 @@ export default function Home() {
   }
 
   if (!authenticated) {
-    return <InsuranceIdEntry />
+    return <CognitoLoginScreen />
   }
 
   const handleInsuranceIdSubmit = (id: string) => {
