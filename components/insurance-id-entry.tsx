@@ -30,11 +30,6 @@ export function InsuranceIdEntry({ onSubmit }: InsuranceIdEntryProps) {
     onSubmit(id)
   }
 
-    const handleLogout = () => {
-       window.location.href = "/api/auth/logout"
-  }
-
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 to-secondary/5">
       <Card className="w-full max-w-md p-8 shadow-lg">
@@ -68,15 +63,6 @@ export function InsuranceIdEntry({ onSubmit }: InsuranceIdEntryProps) {
               {isLoading ? "Verifying..." : "Continue"}
             </Button>
           </form>
-
-          {/* 🔥 Новая кнопка Logout */}
-          <Button
-            variant="destructive"
-            onClick={handleLogout}
-            className="w-full h-10"
-          >
-            Log out
-          </Button>
 
           <p className="text-xs text-center text-muted-foreground">Your data is secure and encrypted</p>
         </div>
